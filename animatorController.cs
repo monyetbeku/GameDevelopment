@@ -5,6 +5,17 @@ using UnityEngine;
 public class animatorController : MonoBehaviour {
 
 	public static animatorController instance;
+	PlayerController playercont;
+	mainmenu restartOn;
+
+	public int enemyLayer;
+	public int playerLayer;
+	public int duriLayer;
+	public int Snowbols;
+	bool playerdie;
+	bool restart6;
+
+
 
 	Transform myTrans;
 	Animator myAnim;
@@ -14,8 +25,11 @@ public class animatorController : MonoBehaviour {
 	{
 		myTrans = this.transform;
 		myAnim = this.gameObject.GetComponent<Animator> ();
+		playercont = FindObjectOfType<PlayerController> ();
+		restartOn = FindObjectOfType<mainmenu> ();
 		instance = this;
 		sansScaleCache = myTrans.localScale;
+		playerdie = false;
 	}
 
 	void Awake()
@@ -53,9 +67,19 @@ public class animatorController : MonoBehaviour {
 	IEnumerator DamagerBlinker(float damagedTime)
 	{
 		//ignore collision with enemy layer
-		int enemyLayer = LayerMask.NameToLayer("Enemy");
-		int playerLayer = LayerMask.NameToLayer("Player");
+		enemyLayer = LayerMask.NameToLayer("Enemy");
+		playerLayer = LayerMask.NameToLayer("Player");
+		duriLayer = LayerMask.NameToLayer("Duri");
+		Snowbols = LayerMask.NameToLayer("Snowbol");
+		playerdie = playercont.Die ();
+		restart6 = restartOn.restart7;
+
+
+
+
 		Physics2D.IgnoreLayerCollision (enemyLayer, playerLayer, true);
+		Physics2D.IgnoreLayerCollision (duriLayer, playerLayer, true);
+		Physics2D.IgnoreLayerCollision (Snowbols, playerLayer, true);
 		foreach (Collider2D collider in PlayerController.instance.myCools) 
 		{
 			collider.enabled = false;
@@ -63,6 +87,11 @@ public class animatorController : MonoBehaviour {
 
 		}
 
+		if (playerdie || restart6) {
+			Physics2D.IgnoreLayerCollision (enemyLayer, playerLayer, false);
+			Physics2D.IgnoreLayerCollision (duriLayer, playerLayer, false);
+			Physics2D.IgnoreLayerCollision (Snowbols, playerLayer, false);
+		}
 
 
 
@@ -76,6 +105,8 @@ public class animatorController : MonoBehaviour {
 
 		//stop blinking and re-enable player layer collision with enemy layer
 		Physics2D.IgnoreLayerCollision (enemyLayer, playerLayer, false);
+		Physics2D.IgnoreLayerCollision (duriLayer, playerLayer, false);
+		Physics2D.IgnoreLayerCollision (Snowbols, playerLayer, false);
 		myAnim.SetLayerWeight (1, 0);
 	}
 }

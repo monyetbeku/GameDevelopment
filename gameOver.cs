@@ -7,12 +7,12 @@ public class gameOver : MonoBehaviour {
 	public GameObject gameOver1;
 
 	public bool over = false;
-	public buttonActive button; // Manggil Script
+	public buttonActive button1; // Manggil Script
 
 
 	// Use this for initialization
 	void Start () {
-		button = FindObjectOfType<buttonActive> (); // Declarasi script yang dipanggil
+		button1 = FindObjectOfType<buttonActive> (); // Declarasi script yang dipanggil
 		gameOver1.SetActive (false);
 
 	}
@@ -24,15 +24,15 @@ public class gameOver : MonoBehaviour {
 
 		if (over) {
 			gameOver1.SetActive (true);
-			Time.timeScale = 0;
-			button.buttonOff = true;
+
+			button1.buttonOff = true;
 		}
 
 
 		if (!over) {
 			gameOver1.SetActive (false);
-			Time.timeScale = 1;
-			button.buttonOff = false;
+
+			button1.buttonOff = false;
 		}
 
 	}

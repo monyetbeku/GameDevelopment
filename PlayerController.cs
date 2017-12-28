@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour 
 {
 	public static PlayerController instance;
+	PauseMenu pause1;
 
 	//movement
 	[Header("Movement")]
@@ -23,6 +24,7 @@ public class PlayerController : MonoBehaviour
 	public int curHealth;
 	public int maxHealth = 100;
 	public Transform spawnPoint;
+	public Vector2 velocity;
 
 	// HEALTH ======================
 
@@ -32,9 +34,9 @@ public class PlayerController : MonoBehaviour
 	AudioSource playerJump;
 
 
-	Rigidbody2D myBody;
+	public Rigidbody2D myBody;
 	public bool isGrounded = false;
-	animatorController myAnim;
+	public animatorController myAnim;
 
 	[Header("Combat")]
 	//combat
@@ -62,6 +64,7 @@ public class PlayerController : MonoBehaviour
 
 	void Start () 
 	{
+		pause1 = FindObjectOfType<PauseMenu> ();
 		myCools = this.GetComponents<Collider2D> ();
 		myBody = this.GetComponent<Rigidbody2D> ();
 		myTrans = this.transform;
@@ -126,12 +129,17 @@ public class PlayerController : MonoBehaviour
 
 	// DIE =====================
 
-	void Die(){
-		
-		gameOver1.over = true;
-		transform.position = diePoint.position;
+	public bool Die(){
+		if (curHealth <= 0) {
+			gameOver1.over = true;
+			transform.position = diePoint.position;
+			//		Physics2D.IgnoreLayerCollision (myAnim.enemyLayer, myAnim.playerLayer, false);
+			//		Physics2D.IgnoreLayerCollision (myAnim.duriLayer, myAnim.playerLayer, false);
+			//		Physics2D.IgnoreLayerCollision (myAnim.Snowbols, myAnim.playerLayer, false);
+			return true;
+		}
+		return false;
 
-		
 	}
 	// DIE ====================
 
@@ -166,16 +174,8 @@ public class PlayerController : MonoBehaviour
 	void Damaged()
 	{
 		curHealth -= 1;
+		myAnim.TriggerDamaged (invicibleAfterDamaged);
 		Debug.Log ("KENA CIDUK SEKALI");
-		if (playerHeart <= 0) {
-			Destroy (this.gameObject);
-//			LostPanel.SetActive (true);
-//			Player.SetActive (false);
-		} else {
-			myAnim.TriggerDamaged (invicibleAfterDamaged);
-
-
-		}
 	}
 
 	void OnCollisionEnter2D(Collision2D collision)
@@ -188,7 +188,7 @@ public class PlayerController : MonoBehaviour
 				//Debug.Log (point.normal);
 				Debug.DrawLine (point.point, point.point + point.normal, Color.red, 10);
 				if (point.normal.y >= 0.9f) {
-					Vector2 velocity = myBody.velocity;
+					velocity = myBody.velocity;
 					velocity.y = jumpVelocity;
 					myBody.velocity = velocity;
 					enemy.Hurt ();
